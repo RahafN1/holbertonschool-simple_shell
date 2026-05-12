@@ -1,0 +1,126 @@
+.TH HSH 1 "May 2026" "1.0" "Simple Shell Man Page"
+
+.SH NAME
+hsh \- simple UNIX command line interpreter
+
+.SH SYNOPSIS
+.B hsh
+[\fIcommand\fR]
+
+.SH DESCRIPTION
+.B hsh
+is a simple UNIX shell that reads and executes commands from standard input.
+It replicates the core behavior of
+.B /bin/sh
+and supports both interactive and non-interactive modes.
+
+In interactive mode, the shell displays a prompt
+.B ($)
+and waits for user input. In non-interactive mode, commands are read from a pipe or file.
+
+.SH INVOCATION
+.TP
+.B Interactive mode:
+.nf
+$ ./hsh
+($) command [arguments]
+.fi
+
+.TP
+.B Non-interactive mode:
+.nf
+$ echo "command" | ./hsh
+$ cat script_file | ./hsh
+.fi
+
+.SH BUILT-IN COMMANDS
+
+.TP
+.B exit
+Exit the shell. Terminates the current shell session.
+
+.TP
+.B env
+Print the current environment variables to standard output, one per line.
+
+.SH EXECUTION
+
+When a command is entered,
+.B hsh
+searches for the executable in the directories listed in the
+.B PATH
+environment variable. If found, it forks a child process and uses
+.BR execve (2)
+to run the command. The parent process waits for the child to complete before prompting again.
+
+If the command is not found,
+.B hsh
+prints an error message to standard error in the following format:
+
+.nf
+    ./hsh: 1: command: not found
+.fi
+
+.SH EXAMPLES
+
+.TP
+Run a command in interactive mode:
+.nf
+($) /bin/ls
+hsh main.c shell.c
+.fi
+
+.TP
+Run a command in non-interactive mode:
+.nf
+$ echo "/bin/ls" | ./hsh
+hsh main.c shell.c
+.fi
+
+.TP
+Print environment variables:
+.nf
+($) env
+PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+HOME=/root
+...
+.fi
+
+.SH ENVIRONMENT
+
+.TP
+.B PATH
+Colon-separated list of directories to search for commands.
+
+.TP
+.B HOME
+The home directory of the current user.
+
+.SH EXIT STATUS
+
+.TP
+.B 0
+Command executed successfully.
+
+.TP
+.B 1
+Command not found or execution failed.
+
+.TP
+.B 2
+Usage error.
+
+.SH SEE ALSO
+.BR sh (1),
+.BR bash (1),
+.BR execve (2),
+.BR fork (2),
+.BR wait (2),
+.BR getline (3)
+
+.SH AUTHORS
+See the AUTHORS file in the repository for a full list of contributors.
+
+.SH BUGS
+No known bugs. Please report issues to the repository maintainers.
+
