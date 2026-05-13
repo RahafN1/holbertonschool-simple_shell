@@ -11,6 +11,7 @@
 extern char **environ;
 
 char *trim(char *str);
+char **tokenize(char *str);
 void execute(char *cmd, char *prog);
 
 #endif /* SHELL_H */

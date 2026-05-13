@@ -25,13 +25,39 @@ char *trim(char *str)
 }
 
 /**
+ * tokenize - splits a string into array of tokens
+ * @str: the string to split
+ *
+ * Return: array of strings or NULL on failure
+ */
+char **tokenize(char *str)
+{
+	char **args;
+	char *token;
+	int i = 0;
+
+	args = malloc(sizeof(char *) * 64);
+	if (!args)
+		return (NULL);
+
+	token = strtok(str, " \t");
+	while (token)
+	{
+		args[i++] = token;
+		token = strtok(NULL, " \t");
+	}
+	args[i] = NULL;
+	return (args);
+}
+
+/**
  * execute - forks and executes a command using execve
  * @cmd: the command to execute
  * @prog: name of the shell program (argv[0])
  */
 void execute(char *cmd, char *prog)
 {
-	char *args[2];
+	char **args;
 	char *trimmed;
 	pid_t pid;
 	int status;
@@ -41,24 +67,28 @@ void execute(char *cmd, char *prog)
 	if (trimmed[0] == '\0')
 		return;
 
-	args[0] = trimmed;
-	args[1] = NULL;
+	args = tokenize(trimmed);
+	if (!args)
+		return;
 
 	pid = fork();
 	if (pid == -1)
 	{
 		perror(prog);
+		free(args);
 		return;
 	}
 
 	if (pid == 0)
 	{
-		if (execve(trimmed, args, environ) == -1)
+		if (execve(args[0], args, environ) == -1)
 		{
 			fprintf(stderr, "%s: No such file or directory\n", prog);
+			free(args);
 			exit(1);
 		}
 	}
 
 	wait(&status);
+	free(args);
 }
