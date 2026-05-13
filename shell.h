@@ -10,7 +10,7 @@
 
 extern char **environ;
 
-/* Function prototypes */
+char *trim(char *str);
 void execute(char *cmd, char *prog);
 
 #endif /* SHELL_H */
