@@ -121,30 +121,32 @@ int handle_builtin(char **args, char *line)
  * @prog: name of the shell program (argv[0])
  * @count: command count for error messages
  * @line: the input line for memory cleanup
+ *
+ * Return: exit status of last command
  */
-void execute(char *cmd, char *prog, int count, char *line)
+int execute(char *cmd, char *prog, int count, char *line)
 {
 	char **args, *trimmed, *path;
 	pid_t pid;
-	int status;
+	int status = 0;
 
 	trimmed = trim(cmd);
 	if (trimmed[0] == '\0')
-		return;
+		return (0);
 	args = tokenize(trimmed);
 	if (!args)
-		return;
+		return (0);
 	if (handle_builtin(args, line))
 	{
 		free(args);
-		return;
+		return (0);
 	}
 	path = find_in_path(args[0]);
 	if (!path)
 	{
 		fprintf(stderr, "%s: %d: %s: not found\n", prog, count, args[0]);
 		free(args);
-		return;
+		return (127);
 	}
 	pid = fork();
 	if (pid == -1)
@@ -153,7 +155,7 @@ void execute(char *cmd, char *prog, int count, char *line)
 		if (path != args[0])
 			free(path);
 		free(args);
-		return;
+		return (1);
 	}
 	if (pid == 0)
 	{
@@ -166,8 +168,11 @@ void execute(char *cmd, char *prog, int count, char *line)
 			exit(127);
 		}
 	}
-	wait(&status);
+	waitpid(pid, &status, 0);
 	if (path != args[0])
 		free(path);
 	free(args);
+	if (WIFEXITED(status))
+		return (WEXITSTATUS(status));
+	return (1);
 }
