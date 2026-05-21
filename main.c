@@ -5,7 +5,7 @@
  * @argc: argument count (unused)
  * @argv: argument vector
  *
- * Return: 0 on success
+ * Return: last command exit status
  */
 int main(int argc __attribute__((unused)), char **argv)
 {
@@ -13,6 +13,7 @@ int main(int argc __attribute__((unused)), char **argv)
 	size_t len = 0;
 	ssize_t nread;
 	int count = 1;
+	int status = 0;
 
 	while (1)
 	{
@@ -29,9 +30,9 @@ int main(int argc __attribute__((unused)), char **argv)
 			line[nread - 1] = '\0';
 		if (line[0] == '\0')
 			continue;
-		execute(line, argv[0], count, line);
+		status = execute(line, argv[0], count, line);
 		count++;
 	}
 	free(line);
-	return (0);
+	return (status);
 }
