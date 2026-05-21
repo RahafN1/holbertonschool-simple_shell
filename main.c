@@ -30,7 +30,7 @@ int main(int argc __attribute__((unused)), char **argv)
 			line[nread - 1] = '\0';
 		if (line[0] == '\0')
 			continue;
-		status = execute(line, argv[0], count, line);
+		status = execute(line, argv[0], count, line, status);
 		count++;
 	}
 	free(line);
