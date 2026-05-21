@@ -29,7 +29,7 @@ int main(int argc __attribute__((unused)), char **argv)
 			line[nread - 1] = '\0';
 		if (line[0] == '\0')
 			continue;
-		execute(line, argv[0], count);
+		execute(line, argv[0], count, line);
 		count++;
 	}
 	free(line);
