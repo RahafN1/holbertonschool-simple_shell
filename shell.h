@@ -13,4 +13,5 @@ char **tokenize(char *str);
 int execute(char *cmd, char *prog, int count, char *line, int last_status);
 char *find_in_path(char *cmd);
 int handle_builtin(char **args, char *line, int last_status);
+char *get_path_env(void);
 #endif /* SHELL_H */
