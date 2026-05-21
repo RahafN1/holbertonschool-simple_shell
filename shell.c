@@ -92,16 +92,18 @@ char *find_in_path(char *cmd)
 /**
  * handle_builtin - handles built-in commands
  * @args: tokenized arguments
+ * @line: the input line to free before exit
  *
  * Return: 1 if builtin handled, 0 otherwise
  */
-int handle_builtin(char **args)
+int handle_builtin(char **args, char *line)
 {
 	int i;
 
 	if (strcmp(args[0], "exit") == 0)
 	{
 		free(args);
+		free(line);
 		exit(0);
 	}
 	if (strcmp(args[0], "env") == 0)
@@ -118,8 +120,9 @@ int handle_builtin(char **args)
  * @cmd: the command to execute
  * @prog: name of the shell program (argv[0])
  * @count: command count for error messages
+ * @line: the input line for memory cleanup
  */
-void execute(char *cmd, char *prog, int count)
+void execute(char *cmd, char *prog, int count, char *line)
 {
 	char **args, *trimmed, *path;
 	pid_t pid;
@@ -131,7 +134,7 @@ void execute(char *cmd, char *prog, int count)
 	args = tokenize(trimmed);
 	if (!args)
 		return;
-	if (handle_builtin(args))
+	if (handle_builtin(args, line))
 	{
 		free(args);
 		return;
