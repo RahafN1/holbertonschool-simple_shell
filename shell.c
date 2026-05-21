@@ -47,6 +47,23 @@ char **tokenize(char *str)
 }
 
 /**
+ * get_path_env - gets PATH value from environ manually
+ *
+ * Return: pointer to PATH value or NULL
+ */
+char *get_path_env(void)
+{
+	int i;
+
+	for (i = 0; environ[i]; i++)
+	{
+		if (strncmp(environ[i], "PATH=", 5) == 0)
+			return (environ[i] + 5);
+	}
+	return (NULL);
+}
+
+/**
  * find_in_path - searches for cmd in PATH directories
  * @cmd: the command name
  *
@@ -54,21 +71,26 @@ char **tokenize(char *str)
  */
 char *find_in_path(char *cmd)
 {
-	char *path_env, *path_copy, *dir, *full, *saveptr;
+	char *path_env, *path_copy, *dir, *full;
 	struct stat st;
 	int len;
+	char *ptr, *start;
 
 	if (strchr(cmd, '/'))
 		return (cmd);
-	path_env = getenv("PATH");
+	path_env = get_path_env();
 	if (!path_env || path_env[0] == '\0')
 		return (NULL);
 	path_copy = strdup(path_env);
 	if (!path_copy)
 		return (NULL);
-	dir = strtok_r(path_copy, ":", &saveptr);
-	while (dir)
+	start = path_copy;
+	while (start)
 	{
+		ptr = strchr(start, ':');
+		if (ptr)
+			*ptr = '\0';
+		dir = start;
 		len = strlen(dir) + strlen(cmd) + 2;
 		full = malloc(len);
 		if (!full)
@@ -83,7 +105,10 @@ char *find_in_path(char *cmd)
 			return (full);
 		}
 		free(full);
-		dir = strtok_r(NULL, ":", &saveptr);
+		if (ptr)
+			start = ptr + 1;
+		else
+			start = NULL;
 	}
 	free(path_copy);
 	return (NULL);
