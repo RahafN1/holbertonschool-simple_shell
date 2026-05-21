@@ -54,19 +54,19 @@ char **tokenize(char *str)
  */
 char *find_in_path(char *cmd)
 {
-	char *path_env, *path_copy, *dir, *full;
+	char *path_env, *path_copy, *dir, *full, *saveptr;
 	struct stat st;
 	int len;
 
 	if (strchr(cmd, '/'))
 		return (cmd);
 	path_env = getenv("PATH");
-	if (!path_env)
+	if (!path_env || path_env[0] == '\0')
 		return (NULL);
 	path_copy = strdup(path_env);
 	if (!path_copy)
 		return (NULL);
-	dir = strtok(path_copy, ":");
+	dir = strtok_r(path_copy, ":", &saveptr);
 	while (dir)
 	{
 		len = strlen(dir) + strlen(cmd) + 2;
@@ -83,7 +83,7 @@ char *find_in_path(char *cmd)
 			return (full);
 		}
 		free(full);
-		dir = strtok(NULL, ":");
+		dir = strtok_r(NULL, ":", &saveptr);
 	}
 	free(path_copy);
 	return (NULL);
