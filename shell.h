@@ -6,6 +6,7 @@
 #include <unistd.h>
 #include <sys/wait.h>
 #include <sys/types.h>
+#include <sys/stat.h>
 extern char **environ;
 char *trim(char *str);
 char **tokenize(char *str);
