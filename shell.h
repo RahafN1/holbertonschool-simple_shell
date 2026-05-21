@@ -10,7 +10,7 @@
 extern char **environ;
 char *trim(char *str);
 char **tokenize(char *str);
-void execute(char *cmd, char *prog, int count, char *line);
+int execute(char *cmd, char *prog, int count, char *line);
 char *find_in_path(char *cmd);
 int handle_builtin(char **args, char *line);
 #endif /* SHELL_H */
